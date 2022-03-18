@@ -32,7 +32,7 @@ class Face_Register:
 
         # Tkinter GUI
         self.win = tk.Tk()
-        self.win.title("Face Register @coneypo")
+        self.win.title("工大人脸注册系统")
 
         # PLease modify window size here if needed
         self.win.geometry("1300x550")
@@ -50,7 +50,7 @@ class Face_Register:
         self.input_name = tk.Entry(self.frame_right_info)
         self.input_name_char = ""
         self.label_warning = tk.Label(self.frame_right_info)
-        self.label_face_cnt = tk.Label(self.frame_right_info, text="Faces in current frame: ")
+        self.label_face_cnt = tk.Label(self.frame_right_info, text="视频人脸数目: ")
         self.log_all = tk.Label(self.frame_right_info)
 
         self.font_title = tkFont.Font(family='Helvetica', size=20, weight='bold')
@@ -81,7 +81,7 @@ class Face_Register:
         self.fps_show = 0
         self.start_time = time.time()
 
-        self.cap = cv2.VideoCapture(0)  # Get video stream from camera
+        self.cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)  # Get video stream from camera
         # self.cap = cv2.VideoCapture("test.mp4")   # Input local video
 
     # 删除之前存的人脸数据文件夹 / Delete old face folders
@@ -103,7 +103,7 @@ class Face_Register:
 
     def GUI_info(self):
         tk.Label(self.frame_right_info,
-                 text="Face register",
+                 text="人脸注册",
                  font=self.font_title).grid(row=0, column=0, columnspan=3, sticky=tk.W, padx=2, pady=20)
 
         tk.Label(self.frame_right_info,
@@ -111,11 +111,11 @@ class Face_Register:
         self.label_fps_info.grid(row=1, column=2, sticky=tk.W, padx=5, pady=2)
 
         tk.Label(self.frame_right_info,
-                 text="Faces in database: ").grid(row=2, column=0, columnspan=2, sticky=tk.W, padx=5, pady=2)
+                 text="人脸数据库: ").grid(row=2, column=0, columnspan=2, sticky=tk.W, padx=5, pady=2)
         self.label_cnt_face_in_database.grid(row=2, column=2, columnspan=3, sticky=tk.W, padx=5, pady=2)
 
         tk.Label(self.frame_right_info,
-                 text="Faces in current frame: ").grid(row=3, column=0, columnspan=2, sticky=tk.W, padx=5, pady=2)
+                 text="当前视频人脸数: ").grid(row=3, column=0, columnspan=2, sticky=tk.W, padx=5, pady=2)
         self.label_face_cnt.grid(row=3, column=2, columnspan=3, sticky=tk.W, padx=5, pady=2)
 
         self.label_warning.grid(row=4, column=0, columnspan=3, sticky=tk.W, padx=5, pady=2)
@@ -123,30 +123,30 @@ class Face_Register:
         # Step 1: Clear old data
         tk.Label(self.frame_right_info,
                  font=self.font_step_title,
-                 text="Step 1: Clear face photos").grid(row=5, column=0, columnspan=2, sticky=tk.W, padx=5, pady=20)
+                 text="第一步: 清空人脸库").grid(row=5, column=0, columnspan=2, sticky=tk.W, padx=5, pady=20)
         tk.Button(self.frame_right_info,
-                  text='Clear',
+                  text='清理',
                   command=self.GUI_clear_data).grid(row=6, column=0, columnspan=3, sticky=tk.W, padx=5, pady=2)
 
         # Step 2: Input name and create folders for face
         tk.Label(self.frame_right_info,
                  font=self.font_step_title,
-                 text="Step 2: Input name").grid(row=7, column=0, columnspan=2, sticky=tk.W, padx=5, pady=20)
+                 text="第二步: 输入姓名").grid(row=7, column=0, columnspan=2, sticky=tk.W, padx=5, pady=20)
 
-        tk.Label(self.frame_right_info, text="Name: ").grid(row=8, column=0, sticky=tk.W, padx=5, pady=0)
+        tk.Label(self.frame_right_info, text="姓名: ").grid(row=8, column=0, sticky=tk.W, padx=5, pady=0)
         self.input_name.grid(row=8, column=1, sticky=tk.W, padx=0, pady=2)
 
         tk.Button(self.frame_right_info,
-                  text='Input',
+                  text='确定',
                   command=self.GUI_get_input_name).grid(row=8, column=2, padx=5)
 
         # Step 3: Save current face in frame
         tk.Label(self.frame_right_info,
                  font=self.font_step_title,
-                 text="Step 3: Save face image").grid(row=9, column=0, columnspan=2, sticky=tk.W, padx=5, pady=20)
+                 text="第三步: 保存人脸图片").grid(row=9, column=0, columnspan=2, sticky=tk.W, padx=5, pady=20)
 
         tk.Button(self.frame_right_info,
-                  text='Save current face',
+                  text='保存当前人脸',
                   command=self.save_current_face).grid(row=10, column=0, columnspan=3, sticky=tk.W)
 
         # Show log in GUI
@@ -223,7 +223,8 @@ class Face_Register:
                         self.ss_cnt) + ".jpg\"" + " saved!"
                     self.face_ROI_image = cv2.cvtColor(self.face_ROI_image, cv2.COLOR_BGR2RGB)
 
-                    cv2.imwrite(self.current_face_dir + "/img_face_" + str(self.ss_cnt) + ".jpg", self.face_ROI_image)
+                    cv2.imencode('.jpg', self.face_ROI_image)[1].tofile(self.current_face_dir + "/img_face_" + str(self.ss_cnt) + ".jpg")
+                    # cv2.imwrite(self.current_face_dir + "/img_face_" + str(self.ss_cnt) + ".jpg", self.face_ROI_image)
                     logging.info("%-40s %s/img_face_%s.jpg", "写入本地 / Save into：",
                                  str(self.current_face_dir), str(self.ss_cnt) + ".jpg")
                 else:

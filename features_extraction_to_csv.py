@@ -32,7 +32,9 @@ face_reco_model = dlib.face_recognition_model_v1("data/data_dlib/dlib_face_recog
 # Input:    path_img           <class 'str'>
 # Output:   face_descriptor    <class 'dlib.vector'>
 def return_128d_features(path_img):
-    img_rd = cv2.imread(path_img)
+    print(path_img)
+    img_rd = cv2.imdecode(np.fromfile(path_img, dtype=np.uint8), -1)
+    # img_rd = cv2.imread(path_img)
     faces = detector(img_rd, 1)
 
     logging.info("%-40s %-20s", "检测到人脸的图像 / Image with faces detected:", path_img)
@@ -82,7 +84,7 @@ def main():
     person_list = os.listdir("data/data_faces_from_camera/")
     person_list.sort()
 
-    with open("data/features_all.csv", "w", newline="") as csvfile:
+    with open("data/features_all.csv", "w",encoding='utf-8', newline="") as csvfile:
         writer = csv.writer(csvfile)
         for person in person_list:
             # Get the mean/average features of face/personX, it will be a list with a length of 128D
